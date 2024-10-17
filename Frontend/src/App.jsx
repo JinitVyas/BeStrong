@@ -1,18 +1,16 @@
-import Header from './components/Header';
-import Pricing from './Components/Pricing';
-import Services from './Components/Services';
-import State from './Components/State';
-import Testimonials from './Components/Testimonial';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Home from './Screens/Home';
+import NotFound from './Screens/NotFound';
 
 function App() {
   return (
-    <div className="App">
-      <Header />
-      <State />
-      <Services />
-      <Testimonials />
-      <Pricing />
-    </div>
+    <Router>
+      <Routes>
+        {/* Default route will render the Home component */}
+        <Route path="*" element={<NotFound/>} />
+        <Route path="/" element={<Home />} />
+      </Routes>
+    </Router>
   );
 }
 
