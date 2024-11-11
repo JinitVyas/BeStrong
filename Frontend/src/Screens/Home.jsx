@@ -12,6 +12,7 @@ function Home() {
             <Services />
             <Pricing />
             <FooterSection />
+            <h1>Hel</h1>
         </div>
     );
 }
