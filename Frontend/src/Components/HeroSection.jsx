@@ -1,5 +1,6 @@
 import React from 'react';
 import Slider from 'react-slick';
+import { Link } from 'react-router-dom';
 
 // Import Slick Carousel styles
 import 'slick-carousel/slick/slick.css';
@@ -49,9 +50,11 @@ const HeroSection = () => {
           Your Ultimate Destination for Unleashing Your Full Potential and Embracing a Vibrant, Active Lifestyle.
         </p>
         <div className="flex justify-center space-x-4">
-          <button className="bg-lime-400 px-6 py-3 text-black font-semibold rounded-md">
+        <Link
+          to="/getstarted"
+          className="bg-lime-400 px-6 py-3 text-black font-semibold rounded-md">
             Start Now.
-          </button>
+          </Link>
         </div>
       </div>
     </div>

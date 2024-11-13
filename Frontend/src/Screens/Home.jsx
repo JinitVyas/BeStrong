@@ -1,16 +1,26 @@
+import AboutUs from '../Components/AboutUs';
+import ContactUs from '../Components/ContactUs';
 import FooterSection from '../Components/FooterSection';
 import HeaderSection from '../Components/HeaderSection';
 import HeroSection from '../Components/HeroSection';
 import Pricing from '../Components/Pricing';
-import Services from '../Components/Services';
 
 function Home() {
     return (
         <div>
             <HeaderSection />
-            <HeroSection />
-            <Services />
-            <Pricing />
+            <div id="home">
+                <HeroSection />
+            </div>
+            <div id="about">
+                <AboutUs />
+            </div>
+            <div id="plans">
+                <Pricing />
+            </div>
+            <div id="contactus">
+                <ContactUs />
+            </div>
             <FooterSection />
         </div>
     );
