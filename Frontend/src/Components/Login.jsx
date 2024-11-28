@@ -14,7 +14,7 @@ const Login = () => {
 
     // Send login data to the backend
     try {
-      const response = await fetch('http://localhost:5000/api/login', {
+      const response = await fetch('http://localhost:5001/api/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -36,6 +36,12 @@ const Login = () => {
       }
     } catch (err) {
       setErrorMessage('Error connecting to the server. Please try again later.');
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleSubmit(e); // Trigger the form submission on Enter key press
     }
   };
 
@@ -81,6 +87,7 @@ const Login = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter your password"
                 className="w-full p-3 bg-transparent border-none focus:outline-none text-white placeholder-gray-500"
+                onKeyDown={handleKeyDown}
               />
             </div>
           </div>

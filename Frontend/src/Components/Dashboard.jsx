@@ -1,14 +1,37 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import HeaderSection from './HeaderSection';
 import FooterSection from './FooterSection';
 import { Link } from 'react-router-dom';
 
-const Dashboard = ({ username }) => {
+const Dashboard = () => {
   const [expandedWeek, setExpandedWeek] = useState(null);
+  const [username, setUsername] = useState(null);
 
   const toggleWeek = (week) => {
     setExpandedWeek(expandedWeek === week ? null : week);
   };
+
+  useEffect(() => {
+    // Fetch the token from localStorage
+    const token = localStorage.getItem('token');
+
+    if (token) {
+      try {
+        // Decode the JWT payload
+        const [, payload] = token.split('.');
+        const decodedPayload = JSON.parse(
+          atob(payload.replace(/-/g, '+').replace(/_/g, '/'))
+        );
+
+        // Extract the username
+        setUsername(decodedPayload.username);
+      } catch (error) {
+        console.error('Failed to decode token:', error);
+      }
+    } else {
+      console.warn('No token found in localStorage');
+    }
+  }, []);
 
   const workoutHistory = [];
   const currentExercises = [];
@@ -53,7 +76,7 @@ const Dashboard = ({ username }) => {
 
           {/* Current Exercise Column (70% width) */}
           <div className="w-2/3 bg-gray-800 p-6 rounded-lg shadow-lg space-y-4">
-            <h2 className="text-2xl font-bold mb-4">Current Exercises</h2>
+            <h2 className="text-2xl font-bold mb-4">Current Week Exercises</h2>
 
             {currentExercises.length > 0 ? (
               currentExercises.map((exercise, index) => (
