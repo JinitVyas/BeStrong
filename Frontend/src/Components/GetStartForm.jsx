@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import FooterSection from "./FooterSection";
 import HeaderSection from "./HeaderSection";
 import { Link } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 
 const GetStarted = () => {
@@ -12,6 +13,9 @@ const GetStarted = () => {
   const [height, setHeight] = useState("");
   const [weight, setWeight] = useState("");
   const [weeksFollowing, setWeeksFollowing] = useState("");
+  const [username, setUsername] = useState(""); // State for username
+
+  
 
 
   const healthIssuesOptions = [
@@ -52,6 +56,7 @@ const GetStarted = () => {
     "Tricep Pushdowns": "tricep_pushdowns",
   };
 
+  
 
   const handleHealthIssuesChange = (issue) => {
     setHealthIssues((prevIssues) =>
@@ -71,18 +76,22 @@ const GetStarted = () => {
     setWorkouts([...workouts, { name: "", sets: "", reps: "" }]);
   };
 
+  useEffect(() => {
+    // Decode token and set username
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        setUsername(decoded.username); // Extract and set username
+        // console.log(username);
+      } catch (error) {
+        console.error("Invalid token:", error.message);
+      }
+    }
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const formData = {
-      age,
-      height,
-      weight,
-      goal,
-      healthIssues,
-      workouts,
-      weeksFollowing,
-    };
 
     try {
 
@@ -94,13 +103,18 @@ const GetStarted = () => {
         healthIssues,
         workouts,
         weeksFollowing,
+        username,
       };
+      
 
-      const response = await fetch('http://localhost:5001/api/handleRecommendation', {
+      const response = await fetch('http://localhost:5000/api/handleRecommendation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
+      
+
+
       const result = await response.json();
       console.log(result);
     } catch (error) {
