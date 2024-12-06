@@ -1,3 +1,4 @@
+const axios = require('axios'); // Import axios for HTTP requests
 const jwt = require('jsonwebtoken');
 const Recommendation = require('../models/Recommendation'); // Import the model
 const User = require('../models/User'); // Import the User model
@@ -26,7 +27,7 @@ exports.handleRecommendation = async (req, res) => {
     });
 
     // Prepare the final data to be saved in MongoDB
-    const recommendationData = {
+    const userData = {
       userId,
       age: data.age,
       height: data.height,
@@ -38,11 +39,14 @@ exports.handleRecommendation = async (req, res) => {
     };
 
     // Save the data to MongoDB
-    const newRecommendation = new Recommendation(recommendationData);
-    await newRecommendation.save();
+    // 7 din me ek bar save hone chahiye check karo last save date.
+    const newRecommendation = new Recommendation(userData);
+    // await newRecommendation.save();
 
     // model pkl load
-
+    const pythonResponse = await axios.post('http://127.0.0.1:5001/predict', userData); // Replace with the actual URL of your Python app
+    const modelOutput = pythonResponse.data;
+  
     //update data with model output
 
     console.log("Recommendation saved: ", newRecommendation);

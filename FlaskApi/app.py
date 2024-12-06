@@ -15,6 +15,39 @@ exercise_names = [
     'skull_crushers_sets', 'skull_crushers_reps', 'tricep_pushdowns_sets', 'tricep_pushdowns_reps'
 ]
 
+@app.route('/predict', methods = ['POST'])
+def predict():
+    data = request.json  # Receive JSON data from Node.js
+    print("Received data:", data)
+    received_workouts = data['workouts']
+    weeks = int(data['weeksFollowing'])
+
+    # Step 1: Start with basic attributes
+    input_list = [
+        data.get('age', 0),
+        data.get('height', 0),
+        1 if data.get('goal') == 'Muscle Gain' else 0,
+        1 if 'Heart Issues' in data.get('healthIssues', []) else 0,
+        1 if 'Respiratory Issues' in data.get('healthIssues', []) else 0,
+        1 if 'Diabetes' in data.get('healthIssues', []) else 0,
+        1 if 'High Blood Pressure' in data.get('healthIssues', []) else 0,
+        1 if 'Chronic Back Pain' in data.get('healthIssues', []) else 0
+    ]
+
+    # Append the weight 4 times here
+    weight = data.get('weight', 0)
+    input_list.extend([weight] * 4)
+
+
+    # Generate one week of data
+    one_week_data = [int(received_workouts.get(ex, 0)) for ex in exercise_names]
+
+    # Create data for 4 weeks, padding with zeros if weeksFollowing < 4
+    repeated_data = [0] * len(one_week_data) * (4 - weeks) + one_week_data * weeks
+    input_list.extend(repeated_data)
+    print(input_list)
+    return data
+
 @app.route('/api/getRecommendation', methods=['POST'])
 def get_recommendation():
     print("hdfbbdbf")
@@ -42,4 +75,4 @@ def get_recommendation():
     return jsonify(result[0])
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5001)

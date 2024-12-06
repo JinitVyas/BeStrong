@@ -121,7 +121,6 @@ const GetStarted = () => {
       console.error(error);
     }
   };
-
   return (
     <>
       <HeaderSection />
