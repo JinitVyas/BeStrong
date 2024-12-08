@@ -38,16 +38,18 @@ exports.handleRecommendation = async (req, res) => {
       weeksFollowing: data.weeksFollowing,
     };
 
-    // Save the data to MongoDB
-    // 7 din me ek bar save hone chahiye check karo last save date.
-    const newRecommendation = new Recommendation(userData);
-    // await newRecommendation.save();
+    
 
     // model pkl load
     const pythonResponse = await axios.post('http://127.0.0.1:5001/predict', userData); // Replace with the actual URL of your Python app
     const modelOutput = pythonResponse.data;
-  
+    console.log("****model", typeof(modelOutput));
     //update data with model output
+
+    // 7 din me ek bar save hone chahiye check karo last save date.
+    // Save the data to MongoDB
+    const newRecommendation = new Recommendation(userData);
+    // await newRecommendation.save();
 
     console.log("Recommendation saved: ", newRecommendation);
 

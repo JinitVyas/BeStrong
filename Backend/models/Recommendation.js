@@ -6,10 +6,11 @@ const RecommendationSchema = new mongoose.Schema({
   height: { type: String, required: true },
   weight: { type: String, required: true },
   goal: { type: String, required: true },
-  healthIssues: [{ type: String }], // Array of health issues
-  workouts: { type: Object, required: true }, // Modified workouts object
-  weeksFollowing: { type: String, required: false }, // Optional
-  submissionDate: { type: Date, default: Date.now }, // Auto-generated timestamp
+  healthIssues: [{ type: String }],
+  workouts: { type: Object, required: true },
+  weeksFollowing: { type: String },
+  submissionDate: { type: Date, default: Date.now },
+  recommended_plan: { type: Object, required: true }, // This will store modelOutput
 });
 
 module.exports = mongoose.model('Recommendation', RecommendationSchema);
