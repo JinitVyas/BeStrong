@@ -5,7 +5,7 @@ import numpy as np
 
 
 app = Flask(__name__)
-CORS(app)
+CORS(app) 
 
 # List of exercise columns
 exercise_names = [
