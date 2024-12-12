@@ -76,7 +76,6 @@ const Dashboard = () => {
           {/* Workout History Column (30% width) */}
           <div className="w-[40%] bg-gray-800 p-6 rounded-lg shadow-lg space-y-4">
             <h2 className="text-2xl font-bold mb-4">Workout History</h2>
-
             {workoutHistory && workoutHistory.length > 0 ? (
               workoutHistory.map((week, index) => {
                 // Use the submissionDate field for the date

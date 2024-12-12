@@ -6,3 +6,6 @@ __pycache__/
 
 # Ignore other unnecessary files
 *.log
+
+# Ignore instructions
+README.txt
