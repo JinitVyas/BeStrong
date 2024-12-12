@@ -8,15 +8,15 @@ exports.handleRecommendation = async (req, res) => {
     const data = req.body;
     console.log("Received data: ", data);
 
-    // Assuming the username is passed directly in the request (either in headers or body)
-    const username = req.body.username; // or `req.headers.username` or `req.query.username` depending on your request format
+    // Assuming the username is passed directly in the request
+    const username = req.body.username;
     if (!username) return res.status(400).json({ error: "Username is required" });
 
     // Find user by username in the User collection
     const user = await User.findOne({ username });
     if (!user) return res.status(404).json({ error: "User not found" });
 
-    const userId = user._id; // Get the user ID from the found user
+    const userId = user._id;
 
     // Transform the workouts array into the desired format
     const modifiedWorkouts = {};
@@ -38,18 +38,17 @@ exports.handleRecommendation = async (req, res) => {
       weeksFollowing: data.weeksFollowing,
     };
 
-    
-
-    // model pkl load
-    const pythonResponse = await axios.post('http://127.0.0.1:5001/predict', userData); // Replace with the actual URL of your Python app
+    // Get model output from Python API
+    const pythonResponse = await axios.post('http://127.0.0.1:5001/predict', userData);
     const modelOutput = pythonResponse.data;
-    console.log("****model", typeof(modelOutput));
-    //update data with model output
+    console.log("Model Output: ", modelOutput);
 
-    // 7 din me ek bar save hone chahiye check karo last save date.
+    // Add recommended plan to userData
+    userData.recommended_plan = modelOutput;
+
     // Save the data to MongoDB
     const newRecommendation = new Recommendation(userData);
-    // await newRecommendation.save();
+    await newRecommendation.save();
 
     console.log("Recommendation saved: ", newRecommendation);
 
@@ -63,3 +62,25 @@ exports.handleRecommendation = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+exports.getRecommendations = async (req, res) => {
+  const { username } = req.body;
+  console.log(username);
+  
+  try {
+    // Find the user by username
+    const user = await User.findOne({ username });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Find all recommendations for the user and sort by date
+    const recommendations = await Recommendation.find({ userId: user._id }).sort({ date: -1 });
+    res.json(recommendations);
+  } catch (error) {
+    console.error('Error fetching recommendations:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+

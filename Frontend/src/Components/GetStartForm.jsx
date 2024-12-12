@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import FooterSection from "./FooterSection";
 import HeaderSection from "./HeaderSection";
+import { useNavigate } from 'react-router-dom'; // Import useNavigate at the top
 import { Link } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
@@ -14,6 +15,8 @@ const GetStarted = () => {
   const [weight, setWeight] = useState("");
   const [weeksFollowing, setWeeksFollowing] = useState("");
   const [username, setUsername] = useState(""); // State for username
+  const navigate = useNavigate(); // Call useNavigate at the top level of the component
+
 
   
 
@@ -114,9 +117,15 @@ const GetStarted = () => {
       });
       
 
-
       const result = await response.json();
-      console.log(result);
+
+      if (response.ok) {
+        console.log(result);
+        navigate('/dashboard'); // Redirect to the dashboard
+      } else {
+        console.error('Error submitting data:', result);
+      }
+
     } catch (error) {
       console.error(error);
     }

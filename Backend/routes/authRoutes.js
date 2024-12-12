@@ -4,6 +4,9 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const app = express.Router();
 const recommendationController = require('../controllers/recommendationController');
+const getRecommendations  = require('../controllers/recommendationController');
+
+app.post('/recommendations', getRecommendations.getRecommendations);
 
 app.post('/handleRecommendation', recommendationController.handleRecommendation);
 
