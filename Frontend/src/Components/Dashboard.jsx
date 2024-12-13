@@ -11,15 +11,101 @@ const Dashboard = () => {
 
   // Static exercise names
   const exerciseNames = [
-    "Bench Press", "Pushups", "Chest Fly", "Squats", "Lunges", "Leg Press",
-    "Bicep Curls", "Hammer Curls", "Concentration Curls", "Overhead Press", 
-    "Lateral Raise", "Front Raise", "Deadlifts", "Pullups", "Rows", "Triceps Dips", 
-    "Skull Crushers", "Triceps Pushdowns"
+    "Bench Press",
+    "Pushups",
+    "Chest Fly",
+    "Squats",
+    "Lunges",
+    "Leg Press",
+    "Bicep Curls",
+    "Hammer Curls",
+    "Concentration Curls",
+    "Overhead Press",
+    "Lateral Raise",
+    "Front Raise",
+    "Deadlifts",
+    "Pullups",
+    "Rows",
+    "Triceps Dips",
+    "Skull Crushers",
+    "Triceps Pushdowns",
   ];
 
   const toggleWeek = (week) => {
     setExpandedWeek(expandedWeek === week ? null : week);
   };
+
+  // Old Code 
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const token = localStorage.getItem("token");
+  //     if (!token) {
+  //       console.warn("No token found in localStorage");
+  //       return;
+  //     }
+
+  //     try {
+  //       // Decode username from JWT token
+  //       const [, payload] = token.split(".");
+  //       const decodedPayload = JSON.parse(
+  //         atob(payload.replace(/-/g, "+").replace(/_/g, "/"))
+  //       );
+  //       const user = decodedPayload.username;
+  //       setUsername(user);
+
+  //       // Fetch recommendations from backend
+  //       const response = await fetch(
+  //         `http://localhost:5000/api/recommendations`,
+  //         {
+  //           method: "POST",
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //           },
+  //           body: JSON.stringify({ username: user }),
+  //         }
+  //       );
+
+  //       const data = await response.json();
+
+  //       if (response.ok) {
+  //         // Extract the latest week (last item in the sorted array)
+  //         const latestWeek = data[data.length - 1];
+          
+  //         // Extract the rest of the weeks (all except the last item)
+  //         const restOfTheData = data.slice(0, -1);
+          
+
+  //         // Build the exercise object with exercise names as keys
+  //         const exercisesObject = exerciseNames.reduce((acc, exercise) => {
+  //           const exerciseData = latestWeek.recommended_plan[exercise];
+  //           console.log(exerciseData);
+            
+  //           if (exerciseData && exerciseData.sets && exerciseData.reps) {
+  //             acc[exercise] = {
+  //               sets: exerciseData.sets,
+  //               reps: exerciseData.reps,
+  //             };
+  //           } else {
+  //             // Skip or assign empty if data is unavailable
+  //             acc[exercise] = { sets: "No Data", reps: "No Data" };
+  //           }
+  //           return acc;
+  //         }, {});
+
+  //         // Update the state
+  //         setExercisesObject(exercisesObject);
+  //         setWorkoutHistory(restOfTheData || []); // Fallback to empty array if undefined
+          
+  //       } else {
+  //         console.error("Failed to fetch recommendations:", data.message);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error:", error);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, []);x
 
   useEffect(() => {
     const fetchData = async () => {
@@ -28,7 +114,7 @@ const Dashboard = () => {
         console.warn("No token found in localStorage");
         return;
       }
-
+  
       try {
         // Decode username from JWT token
         const [, payload] = token.split(".");
@@ -37,7 +123,7 @@ const Dashboard = () => {
         );
         const user = decodedPayload.username;
         setUsername(user);
-
+  
         // Fetch recommendations from backend
         const response = await fetch(
           `http://localhost:5000/api/recommendations`,
@@ -49,27 +135,36 @@ const Dashboard = () => {
             body: JSON.stringify({ username: user }),
           }
         );
-
+  
         const data = await response.json();
-
+        console.log(data);
+        
+  
         if (response.ok) {
           // Extract the latest week (last item in the sorted array)
           const latestWeek = data[data.length - 1];
-
+  
           // Extract the rest of the weeks (all except the last item)
           const restOfTheData = data.slice(0, -1);
-
+  
           // Build the exercise object with exercise names as keys
           const exercisesObject = exerciseNames.reduce((acc, exercise) => {
-            const exerciseData = latestWeek.recommended_plan[exercise];
-            if (exerciseData) {
-              acc[exercise] = { sets: exerciseData.sets, reps: exerciseData.reps };
+            // Generate the keys for sets and reps dynamically
+            const exerciseKeySets = exercise.toLowerCase().replace(/\s+/g, "_") + "_sets";
+            const exerciseKeyReps = exercise.toLowerCase().replace(/\s+/g, "_") + "_reps";
+  
+            const sets = latestWeek.recommended_plan[exerciseKeySets];
+            const reps = latestWeek.recommended_plan[exerciseKeyReps];
+  
+            if (sets !== undefined && reps !== undefined) {
+              acc[exercise] = { sets, reps };
             } else {
-              acc[exercise] = { sets: "N/A", reps: "N/A" };
+              acc[exercise] = { sets: "0", reps: "0" };
             }
+  
             return acc;
           }, {});
-
+  
           // Update the state
           setExercisesObject(exercisesObject);
           setWorkoutHistory(restOfTheData || []); // Fallback to empty array if undefined
@@ -80,9 +175,10 @@ const Dashboard = () => {
         console.error("Error:", error);
       }
     };
-
+  
     fetchData();
   }, []);
+  
 
   return (
     <>
@@ -133,15 +229,15 @@ const Dashboard = () => {
                           </div>
 
                           {/* Exercises Data */}
-                          {Object.entries(exercisesObject).map(([exercise, { sets, reps }], i) => (
-                            <React.Fragment key={i}>
-                              <div className="text-gray-300">
-                                {exercise}
-                              </div>
-                              <div className="text-gray-300">{sets}</div>
-                              <div className="text-gray-300">{reps}</div>
-                            </React.Fragment>
-                          ))}
+                          {Object.entries(exercisesObject).map(
+                            ([exercise, { sets, reps }], i) => (
+                              <React.Fragment key={i}>
+                                <div className="text-gray-300">{exercise}</div>
+                                <div className="text-gray-300">{sets}</div>
+                                <div className="text-gray-300">{reps}</div>
+                              </React.Fragment>
+                            )
+                          )}
                         </div>
                       </div>
                     )}
@@ -158,15 +254,15 @@ const Dashboard = () => {
           {/* Current Exercise Column (70% width) */}
           <div className="w-2/3 bg-gray-800 p-6 rounded-lg shadow-lg space-y-4">
             <h2 className="text-2xl font-bold mb-4">Current Week Exercises</h2>
-              <div className="flex flex-col items-center text-gray-300 space-y-4">
-                <img
-                  src="/Photos/Funny_Panda.jpg"
-                  alt="No current exercises"
-                  className="w-[20vw] h-auto"
-                  loading="eager"
-                />
-                <p className="font-bold text-xl">No Current Exercises</p>
-              </div>
+            <div className="flex flex-col items-center text-gray-300 space-y-4">
+              <img
+                src="/Photos/Funny_Panda.jpg"
+                alt="No current exercises"
+                className="w-[20vw] h-auto"
+                loading="eager"
+              />
+              <p className="font-bold text-xl">No Current Exercises</p>
+            </div>
           </div>
         </div>
 
